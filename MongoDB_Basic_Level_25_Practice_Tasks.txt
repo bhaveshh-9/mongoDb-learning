@@ -1,0 +1,45 @@
+MongoDB Basic Level – 25 Practice Tasks
+
+Assume you have a MongoDB database named `college` and a collection named `students`.
+
+Each student document contains fields such as `name`, `age`, `gender`, `course`, `department`, `city`, `marks`, `fees`, and `isActive`.
+
+A. Database and Collection Operations
+
+1. Write a command to create a database named `college`.
+2. Write a command to create a collection named `students`.
+3. Write a command to display all collections in the current database.
+4. Write a command to insert one student record into the `students` collection.
+5. Write a command to insert five student records at once.
+
+B. Read and Display Operations
+
+6. Write a query to display all student records.
+7. Write a query to display only the first five student records.
+8. Write a query to display students whose age is greater than 20.
+9. Write a query to display students whose marks are greater than 75.
+10. Write a query to display students who belong to the `Computer` department.
+11. Write a query to display students who live in `Pune`.
+12. Write a query to display only the `name` and `marks` fields of all students.
+13. Write a query to display students whose gender is `Female`.
+14. Write a query to display students whose fees are less than 50000.
+15. Write a query to display students whose `isActive` field is `true`.
+
+C. Filtering and Sorting Operations
+
+16. Write a query to display students whose marks are between 60 and 90.
+17. Write a query to display students who belong to either the `Computer` or `IT` department.
+18. Write a query to display students whose age is not equal to 20.
+19. Write a query to sort students by marks in ascending order.
+20. Write a query to sort students by marks in descending order.
+
+D. Update and Delete Operations
+
+21. Write a query to update the marks of a student whose name is `Rahul` to 85.
+22. Write a query to increase the fees of a student named `Amit` by 5000.
+23. Write a query to add a new field named `email` to a student document.
+24. Write a query to delete one student whose name is `Rohit`.
+25. Write a query to delete all student records whose marks are less than 35.
+
+Practice Instruction:
+Solve all 25 tasks using MongoDB Shell (`mongosh`). Use `insertOne()`, `insertMany()`, `find()`, `updateOne()`, `updateMany()`, `deleteOne()`, and `deleteMany()` wherever appropriate.
