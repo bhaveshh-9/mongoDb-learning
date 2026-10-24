@@ -289,4 +289,158 @@ All specified conditions must match.
 
 $or:
 At least one specified condition must match.
+===============================================================================================================================
+====================================================================================================================================
+=================================================================================================================================
+MONGODB DAY 3 — AGGREGATION NOTES
+
+----------------------------------------
+1. What is Aggregation?
+----------------------------------------
+
+Aggregation is used to process documents and get useful information from data.
+
+Examples:
+- Count students in each course.
+- Calculate average marks.
+- Find the top 3 students by marks.
+
+----------------------------------------
+2. What is an Aggregation Pipeline?
+----------------------------------------
+
+An aggregation pipeline contains multiple stages.
+
+Each stage processes the documents and passes its output to the next stage.
+
+Example flow:
+
+$match → $group → $sort → $project
+
+----------------------------------------
+3. find() vs aggregate()
+----------------------------------------
+
+find():
+- Used to retrieve documents.
+- Supports filtering documents.
+
+aggregate():
+- Used to process documents through pipeline stages.
+- Supports grouping, calculations, sorting, and more.
+
+----------------------------------------
+4. $match
+----------------------------------------
+
+Filters documents based on a condition.
+
+Example:
+
+{$match: {course: "IT"}}
+
+It selects documents where the course is IT.
+
+----------------------------------------
+5. $group
+----------------------------------------
+
+Groups documents based on a field and performs calculations.
+
+Example:
+
+{$group: {_id: "$course"}}
+
+Here, _id represents the grouping field.
+
+----------------------------------------
+6. $sum
+----------------------------------------
+
+Used to calculate a total or count documents within each group.
+
+Example:
+
+totalCount: {$sum: 1}
+
+This counts documents in each group.
+
+Example:
+
+totalFees: {$sum: "$fees"}
+
+This calculates the total fees in each group.
+
+----------------------------------------
+7. $avg
+----------------------------------------
+
+Calculates the average of a numeric field.
+
+Example:
+
+averageMarks: {$avg: "$marks"}
+
+This calculates the average marks in each group.
+
+----------------------------------------
+8. $sort
+----------------------------------------
+
+Sorts documents based on a field.
+
+Ascending order:
+
+{$sort: {marks: 1}}
+
+Descending order:
+
+{$sort: {marks: -1}}
+
+----------------------------------------
+9. $limit
+----------------------------------------
+
+Limits the number of documents passed to the next stage.
+
+Example:
+
+{$limit: 3}
+
+This keeps at most 3 documents.
+
+----------------------------------------
+10. $project
+----------------------------------------
+
+Specifies which fields should appear in the output.
+
+Example:
+
+{$project: {name: 1, marks: 1, _id: 0}}
+
+This includes name and marks and excludes _id.
+
+Important:
+- Fields excluded by an inclusion-based projection are unavailable to later stages.
+- If a later stage needs marks, keep marks in the projection.
+- The _id field is included by default unless explicitly excluded.
+
+----------------------------------------
+11. Important Pipeline Rule
+----------------------------------------
+
+Each stage receives the output of the previous stage.
+
+If a field is removed by an earlier stage, later stages cannot directly use that field.
+
+Example:
+
+$project → $sort
+
+If $project removes marks, the next $sort cannot meaningfully sort by marks.
+
+----------------------------------------
+END OF DAY 3 NOTES
+----------------------------------------
 
