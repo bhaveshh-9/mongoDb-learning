@@ -440,7 +440,191 @@ $project → $sort
 
 If $project removes marks, the next $sort cannot meaningfully sort by marks.
 
-----------------------------------------
+
 END OF DAY 3 NOTES
 ----------------------------------------
+=============================================================================================================================
+================================================================================================================================
+================================================================================================================================
+# Day 4: MongoDB Indexing & Capped Collections
 
+----------------------------------------
+
+## 1. What is Indexing?
+
+An index helps MongoDB find documents efficiently without scanning every document in a collection.
+
+Example: An index in a book helps us find a topic quickly.
+
+**Advantages:**
+- Can improve query performance.
+- Helps MongoDB find matching documents efficiently.
+
+**Note:** Indexes are not guaranteed to make every query faster.
+
+----------------------------------------
+
+## 2. Create an Index
+
+The `createIndex()` method is used to create an index on a field.
+
+```js
+db.student.createIndex({ name: 1 })
+```
+
+- `1` means ascending order.
+- `-1` means descending order.
+
+----------------------------------------
+
+## 3. View Indexes
+
+The `getIndexes()` method displays the indexes created on a collection.
+
+```js
+db.student.getIndexes()
+```
+
+----------------------------------------
+
+## 4. Drop an Index
+
+The `dropIndex()` method removes a specific index.
+
+```js
+db.student.dropIndex("name_1")
+```
+
+Here, `name_1` is the default name of the index created on the `name` field in ascending order.
+
+----------------------------------------
+
+## 5. Single Field Index
+
+A single field index is created on one field.
+
+Example:
+
+```js
+db.student.createIndex({ name: 1 })
+```
+
+This index can help queries that search by the `name` field.
+
+----------------------------------------
+
+## 6. Compound Index
+
+A compound index is created on multiple fields.
+
+Example:
+
+```js
+db.student.createIndex({ course: 1, marks: -1 })
+```
+
+This index contains:
+- `course` in ascending order.
+- `marks` in descending order.
+
+**Important:** The order of fields matters in a compound index.
+
+The index above can support queries using the `course` field as the first field, such as:
+
+```js
+db.student.find({ course: "IT" })
+```
+
+----------------------------------------
+
+## 7. Unique Index
+
+A unique index prevents duplicate indexed values.
+
+Example:
+
+```js
+db.student.createIndex({ email: 1 }, { unique: true })
+```
+
+If duplicate email values already exist, MongoDB may fail to create this index.
+
+After the unique index is created, inserting a duplicate email value will fail.
+
+----------------------------------------
+
+## 8. explain()
+
+The `explain()` method helps us understand how MongoDB executes a query.
+
+Example:
+
+```js
+db.student.find({ name: "Rahul" }).explain("executionStats")
+```
+
+It provides information about the query execution process.
+
+----------------------------------------
+
+## 9. COLLSCAN
+
+`COLLSCAN` means Collection Scan.
+
+MongoDB scans documents in the collection to find matching results.
+
+It may be less efficient for large collections.
+
+----------------------------------------
+
+## 10. IXSCAN
+
+`IXSCAN` means Index Scan.
+
+MongoDB scans an index to help find matching documents.
+
+An appropriate index can make some queries more efficient.
+
+----------------------------------------
+
+## 11. Capped Collection
+
+A capped collection has a fixed maximum size.
+
+When it becomes full, MongoDB can overwrite older documents as new documents are inserted.
+
+Capped collections are useful for certain logging and monitoring use cases.
+
+----------------------------------------
+
+## 12. Create a Capped Collection
+
+Example:
+
+```js
+db.createCollection("logs", {
+  capped: true,
+  size: 5000
+})
+```
+
+- `logs` is the collection name.
+- `capped: true` creates a capped collection.
+- `size: 5000` specifies a maximum size of approximately 5000 bytes.
+
+----------------------------------------
+
+## 13. Insert Documents into a Capped Collection
+
+```js
+db.logs.insertOne({ message: "Server started" })
+
+db.logs.insertOne({ message: "User logged in" })
+
+db.logs.find()
+```
+
+----------------------------------------
+===============================================================================================================================
+==============================================================================================================================
+===========================================================================================================================
