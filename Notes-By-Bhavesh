@@ -622,9 +622,333 @@ db.logs.insertOne({ message: "Server started" })
 db.logs.insertOne({ message: "User logged in" })
 
 db.logs.find()
-```
+``
 
 ----------------------------------------
 ===============================================================================================================================
 ==============================================================================================================================
-===========================================================================================================================
+==============================================================================================================================
+# Day 5: MongoDB Relationships & Embedded Documents
+
+----------------------------------------
+
+## 1. Embedded Documents
+
+An embedded document is a document stored inside another document.
+
+Example:
+
+```js
+{
+  name: "Rahul",
+  course: "MCA",
+  address: {
+    city: "Pune",
+    state: "Maharashtra"
+  }
+}
+```
+
+Here, `address` is an embedded document containing `city` and `state`.
+
+### Query an Embedded Field
+
+To find students whose city is Pune:
+
+```js
+db.student.find({
+  "address.city": "Pune"
+})
+```
+
+**Use:** Embedded documents are useful when related data is commonly accessed together.
+
+----------------------------------------
+
+## 2. Arrays in Documents
+
+An array stores multiple values in a single field.
+
+Example:
+
+```js
+{
+  name: "Rahul",
+  course: "MCA",
+  skills: ["Java", "MongoDB", "Angular"]
+}
+```
+
+Here, `skills` is an array.
+
+### Find Documents by Array Value
+
+Find students whose skills include MongoDB:
+
+```js
+db.student.find({
+  skills: "MongoDB"
+})
+```
+
+### Find Documents Containing All Specified Values
+
+```js
+db.student.find({
+  skills: { $all: ["Java", "MongoDB"] }
+})
+```
+
+`$all` matches documents whose array contains all the specified values.
+
+### Add a Value Using `$push`
+
+```js
+db.student.updateOne(
+  { name: "Rahul" },
+  { $push: { skills: "Spring Boot" } }
+)
+```
+
+`$push` adds a value to an array, even if that value already exists.
+
+### Add a Value Using `$addToSet`
+
+```js
+db.student.updateOne(
+  { name: "Rahul" },
+  { $addToSet: { skills: "MongoDB" } }
+)
+```
+
+`$addToSet` adds the value only if it is not already present in the array.
+
+### Remove a Value Using `$pull`
+
+```js
+db.student.updateOne(
+  { name: "Rahul" },
+  { $pull: { skills: "Java" } }
+)
+```
+
+`$pull` removes matching values from an array.
+
+----------------------------------------
+
+## 3. Embedded Documents vs Separate Documents
+
+MongoDB supports different ways to store related data.
+
+### A. Embedded Documents
+
+Related data is stored inside the same document.
+
+Example:
+
+```js
+{
+  name: "Rahul",
+  course: "MCA",
+  address: {
+    city: "Pune",
+    state: "Maharashtra"
+  }
+}
+```
+
+**Advantages:**
+- Related data can be retrieved together.
+- Useful when related information is commonly accessed together.
+
+### B. Separate Documents
+
+Related data is stored in separate documents or collections.
+
+Students collection:
+
+```js
+{
+  _id: 101,
+  name: "Rahul",
+  courseId: 501
+}
+```
+
+Courses collection:
+
+```js
+{
+  _id: 501,
+  courseName: "MCA"
+}
+```
+
+**Advantages:**
+- Related data can be managed independently.
+- Useful when data is large, shared, or frequently updated separately.
+
+The best approach depends on the application's requirements and data relationships.
+
+----------------------------------------
+
+## 4. References
+
+A reference connects documents by storing the identifier of another document.
+
+Example:
+
+Students collection:
+
+```js
+{
+  _id: 101,
+  name: "Rahul",
+  courseId: 501
+}
+```
+
+Courses collection:
+
+```js
+{
+  _id: 501,
+  courseName: "MCA"
+}
+```
+
+Here, `courseId: 501` refers to the course document whose `_id` is `501`.
+
+### Find the Student
+
+```js
+db.students.findOne({ _id: 101 })
+```
+
+### Find the Referenced Course
+
+```js
+db.courses.findOne({ _id: 501 })
+```
+
+MongoDB does not automatically fetch referenced documents when a reference field is read. The application can retrieve the related document using another query or an aggregation with `$lookup`.
+
+----------------------------------------
+
+## 5. `$lookup`
+
+The `$lookup` stage combines matching documents from another collection in an aggregation pipeline.
+
+It works similarly to a JOIN in relational databases.
+
+### Example
+
+Students collection:
+
+```js
+{
+  _id: 101,
+  name: "Rahul",
+  courseId: 501
+}
+```
+
+Courses collection:
+
+```js
+{
+  _id: 501,
+  courseName: "MCA"
+}
+```
+
+### `$lookup` Query
+
+```js
+db.students.aggregate([
+  {
+    $lookup: {
+      from: "courses",
+      localField: "courseId",
+      foreignField: "_id",
+      as: "courseDetails"
+    }
+  }
+])
+```
+
+### Explanation
+
+- `from`: The collection to search for matching documents.
+- `localField`: The field from the current collection (`courseId`).
+- `foreignField`: The field from the other collection (`_id`).
+- `as`: The name of the output array field (`courseDetails`).
+
+### Expected Output
+
+```js
+{
+  _id: 101,
+  name: "Rahul",
+  courseId: 501,
+  courseDetails: [
+    {
+      _id: 501,
+      courseName: "MCA"
+    }
+  ]
+}
+```
+
+The matching course is included in the `courseDetails` array.
+
+If no matching course is found, `courseDetails` will be an empty array.
+
+**Important:** `$lookup` adds matching data to the aggregation output. It does not permanently merge or modify the original collections.
+
+----------------------------------------
+
+## 6. References vs `$lookup`
+
+**References:**
+- Store an identifier that connects related documents.
+- Example: `courseId: 501`.
+- Do not automatically retrieve the referenced document.
+
+**`$lookup`:**
+- Retrieves matching documents from another collection in an aggregation pipeline.
+- Uses fields such as `localField` and `foreignField` to match documents.
+- Stores the matching results in an array field.
+
+**Remember:**
+References establish a relationship between documents.
+`$lookup` retrieves related data from another collection.
+
+----------------------------------------
+
+## Day 5 Quick Revision
+
+- Embedded Document: A document inside another document.
+- Array: Stores multiple values in one field.
+- `$all`: Matches arrays containing all specified values.
+- `$push`: Adds a value to an array.
+- `$addToSet`: Adds a value only if it is not already present.
+- `$pull`: Removes matching values from an array.
+- Separate Documents: Store related data independently.
+- References: Connect documents using identifiers.
+- `$lookup`: Combines matching data from another collection in an aggregation pipeline.
+
+----------------------------------------
+
+## Day 5 Completed
+
+Topics Covered:
+1. Embedded Documents
+2. Arrays in Documents
+3. Embedded vs Separate Documents
+4. References
+5. `$lookup`
+
+Status: Completed
+=============================================================================================================================
+==============================================================================================================================
